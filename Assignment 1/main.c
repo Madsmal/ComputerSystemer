@@ -28,7 +28,7 @@ int main()
     //getNextData(file);          // Read Data from Sensor
     while (!feof(file)){
     	x = getNextData(file);
-    	lowPassY= lowPassFilter(x);
+    	lowPassY = lowPassFilter(x);
     	highPassY = highPassFilter(lowPassY);
     	derivY = derivativeFilter(highPassY);
     	squareY = squarePass(derivY);
