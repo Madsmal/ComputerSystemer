@@ -1,19 +1,27 @@
 #include "filters.h"
+int lowBuffY [2] = {0};
+int lowBuffX[12] = {0};
 
+int highBuffY = 0;
+int highBuffX[32] = {0};
+
+int deriBuffX[4] = {0};
+
+int mwiBuffX[30] = {0};
 // Feel free to change return statement and arguments
 int lowPassFilter(int x)
 {
-	int ybuff[2] = {0};
-	int xbuff[12] = {0};
+	
+	
 	int yn;
 
-	yn = 2*ybuff[0]-ybuff[1] + (1/32)*(x-2*xbuff[5]+xbuff[11]);
+	yn = 2*lowBuffY[0]-lowBuffY[1] + (1/32)*(x-2*lowBuffX[5]+lowBuffX[11]);
 	for (int i = 11; i <= 1; i--){
-		xbuff[i] = xbuff[i-1];
+		lowBuffX[i] = lowBuffX[i-1];
 	}
-	xbuff[0] = x;
-	ybuff[1] = ybuff[0];
-	ybuff[0] = yn;
+	lowBuffX[0] = x;
+	lowBuffY[1] = lowBuffY[0];
+	lowBuffY[0] = yn;
 
 	return yn;
 
@@ -27,30 +35,28 @@ int lowPassFilter(int x)
 int highPassFilter(int x) {
 
 	int yn;
-	int yn1 = 0;
-	int xbuff[32] = {0};
 
-	yn = yn1 - (x/32) + xbuff[15] - xbuff[16] + (xbuff[31]/32);
+
+	yn = highBuffY - (x/32) + highBuffX[15] - highBuffX[16] + (highBuffX[31]/32);
 
 	for (int i = 31; i <= 1; i--){
-			xbuff[i] = xbuff[i-1];
+		highBuffX[i] = highBuffX[i-1];
 	}
-	xbuff[0] = x;
-	yn1 = yn;
+	highBuffX[0] = x;
+	highBuffY = yn;
 	return yn;
 }
 
 int derivativeFilter(int x) {
 
 		int yn;
-		int xbuff[4] = {0};
 
-		yn = (1/8)*(2*x+xbuff[0]-xbuff[2]-2*xbuff[3]);
+		yn = (1/8)*(2*x+deriBuffX[0]-deriBuffX[2]-2*deriBuffX[3]);
 
 		for (int i = 3; i <= 1; i--){
-				xbuff[i] = xbuff[i-1];
+			deriBuffX[i] =deriBuffX[i-1];
 		}
-		xbuff[0] = x;
+		deriBuffX[0] = x;
 
 		return yn;
 }
@@ -62,15 +68,13 @@ int squarePass(int x){
 }
 
 int mwiPass(int x){
-	int xbuff[30] = {0};
 	int N = 30;
 	int sum = 0;
 
 	for (int i = 0; i < 30; i++){
-		sum = sum + xbuff[i];
+		sum = sum + mwiBuffX[i];
 	}
 	return sum/N;
 
 }
-
 
