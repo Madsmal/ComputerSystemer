@@ -7,7 +7,7 @@
 
 int yBufferArr[12]={0,0,0,0,0,0,0,0,0,0,0,0};
 	int xBufferArr[12]={0,0,0,0,0,0,0,0,0,0,0,0};
-	int i = 0;
+	int index = 0;
 
 // Main function for organizing the program execution.
 // The functions and object predefined are just for inspiration.
@@ -29,11 +29,15 @@ int main()
     while (!feof(file)){
     	x = getNextData(file);
     	lowPassY = lowPassFilter(x);
+    	// printf("%d\n",lowPassY);
     	highPassY = highPassFilter(lowPassY);
     	derivY = derivativeFilter(highPassY);
     	squareY = squarePass(derivY);
     	mwiY = mwiPass(squareY);
-    	i++;
+    	while (index < 3){
+    		peakDetection();
+    	}
+    	index++;
     }
     lowPassFilter();            // Filter Data
                                 
