@@ -5,9 +5,11 @@
 #include <stdlib.h>
 
 
-int yBufferArr[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+	int yBufferArr[12]={0,0,0,0,0,0,0,0,0,0,0,0};
 	int xBufferArr[12]={0,0,0,0,0,0,0,0,0,0,0,0};
-	int index = 0;
+	int myIndex = 0;
+	int timeCounter = 0;
+	int timeInMiliSec = 0;
 
 // Main function for organizing the program execution.
 // The functions and object predefined are just for inspiration.
@@ -16,7 +18,7 @@ int yBufferArr[12]={0,0,0,0,0,0,0,0,0,0,0,0};
 int main()
 {	
 
-    QRS_params qsr_params;       // Instance of the made avaiable through: #include "qsr.h"
+  //  QRS_params qsr_params;       // Instance of the made avaiable through: #include "qsr.h"
 	FILE *file;                  // Pointer to a file object
 	file = openfile("ECG.txt");
 	int x;
@@ -24,7 +26,14 @@ int main()
 	int highPassY;
 	int derivY;
 	int squareY;
-	int mwiY;
+
+
+		lowPassFilter();            // Filter Data
+	    highPassFilter();
+	    derivativeFilter();
+	    squarePass();
+	    mwiPass();
+
     //getNextData(file);          // Read Data from Sensor
     while (!feof(file)){
     	x = getNextData(file);
@@ -33,15 +42,17 @@ int main()
     	highPassY = highPassFilter(lowPassY);
     	derivY = derivativeFilter(highPassY);
     	squareY = squarePass(derivY);
-    	mwiY = mwiPass(squareY);
-    	while (index < 3){
+    	mwiPass(squareY);
+    	while (myIndex < 3){
     		peakDetection();
     	}
-    	index++;
+    	myIndex++;
+    	timeCounter++;
+    	timeInMiliSec = timeCounter/2.5;
+
     }
-    lowPassFilter();            // Filter Data
-                                
-    peakDetection(&qsr_params); // Perform Peak Detection
+
+
 
 	return 0;
 }
