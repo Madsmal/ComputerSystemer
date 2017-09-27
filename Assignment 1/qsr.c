@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "filters.h"
 
 int peaksTime[24] = { 0 };
 int peaksValue[24] = { 0 };
@@ -15,8 +16,9 @@ int NPKF = 0;
 int SPKF = 2500;
 int RR = 0;
 
-void peakDetection() {
-	if (mwiBuffY[myIndex - 1] < mwiBuffY[myIndex] > mwiBuffY[myIndex + 1]) {
+void peakDetection(int myIndex, int *mwiBuffY, int timeInMiliSec) {
+	printf("Peak-ish\n");
+	if ((mwiBuffY[myIndex - 1] < mwiBuffY[myIndex]) && (mwiBuffY[myIndex] > mwiBuffY[myIndex + 1])) {
 		peaksValue[counter] = mwiBuffY[myIndex];
 		peaksTime[counter] = timeInMiliSec;
 	}
@@ -65,7 +67,7 @@ void peakDetection() {
 		// Implement Searchback here
 		for (int i = counter;i>=counter-7;i--){
 			if (peaksValue[i]>threshold2){
-
+							printf("Hejsa\n");
 							RpeakValue[counter] = peaksValue[i];
 							RpeakTime[counter] = peaksTime[i];
 							SPKF = peaksValue[counter]/8 + (7*SPKF)/8;
@@ -76,9 +78,7 @@ void peakDetection() {
 							threshold1 = NPKF + (SPKF - NPKF) / 4;
 							threshold2 = threshold1 / 2;
 							if (RpeakValue[counter]<2000){
-								printf("Value less than 2000\n Current peak = %d\n Current time = %d\n Current pulse = addpulsehere",RpeakValue[counter],RpeakTime[counter]);
-							} else if (RpeakValue[counter]>=2000) {
-								printf("Current peak = %d\n Current time = %d\n Current pulse = addpulsehere",RpeakValue[counter],RpeakTime[counter]);
+								printf("Value less than 2000\n");
 							}
 							break;
 			}
