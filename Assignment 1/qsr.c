@@ -16,9 +16,9 @@ int SPKF = 2500;
 int RR = 0;
 
 void peakDetection() {
-	if (mwiBuffY[index - 1] < mwiBuffY[index] > mwiBuffY[index + 1]) {
-		peaksValue[counter] = mwiBuffY[index];
-		peaksTime[counter] = clock();
+	if (mwiBuffY[myIndex - 1] < mwiBuffY[myIndex] > mwiBuffY[myIndex + 1]) {
+		peaksValue[counter] = mwiBuffY[myIndex];
+		peaksTime[counter] = timeInMiliSec;
 	}
 
 
@@ -66,6 +66,21 @@ void peakDetection() {
 		for (int i = counter;i>=counter-7;i--){
 			if (peaksValue[i]>threshold2){
 
+							RpeakValue[counter] = peaksValue[i];
+							RpeakTime[counter] = peaksTime[i];
+							SPKF = peaksValue[counter]/8 + (7*SPKF)/8;
+							RRaverage1 = Rsum/8 ;
+							RR_low = RRaverage1 * 0.92;
+							RR_high = RRaverage1 * 1.16;
+							RR_miss = RRaverage1 * 1.66;
+							threshold1 = NPKF + (SPKF - NPKF) / 4;
+							threshold2 = threshold1 / 2;
+							if (RpeakValue[counter]<2000){
+								printf("Value less than 2000\n Current peak = %d\n Current time = %d\n Current pulse = addpulsehere",RpeakValue[counter],RpeakTime[counter]);
+							} else if (RpeakValue[counter]>=2000) {
+								printf("Current peak = %d\n Current time = %d\n Current pulse = addpulsehere",RpeakValue[counter],RpeakTime[counter]);
+							}
+							break;
 			}
 		}
 
