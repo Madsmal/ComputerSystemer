@@ -17,6 +17,6 @@ typedef struct QRS_params
 } QRS_params;
 
 // Feel free to change and add methods
-void peakDetection(QRS_params *params);
+void peakDetection();
 
 #endif // QSR_H
