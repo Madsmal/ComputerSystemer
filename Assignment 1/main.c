@@ -10,6 +10,7 @@
 	int myIndex = 0;
 	int timeCounter = 0;
 	int timeInMiliSec = 0;
+	int finalData[3] = {0};
 
 // Main function for organizing the program execution.
 // The functions and object predefined are just for inspiration.
@@ -17,10 +18,11 @@
 
 int main()
 {	
-
+	printf("Fuck C \n");
   //  QRS_params qsr_params;       // Instance of the made avaiable through: #include "qsr.h"
 	FILE *file;                  // Pointer to a file object
 	file = openfile("ECG.txt");
+
 	int x;
 	int lowPassY;
 	int highPassY;
@@ -28,11 +30,6 @@ int main()
 	int squareY;
 
 
-		lowPassFilter();            // Filter Data
-	    highPassFilter();
-	    derivativeFilter();
-	    squarePass();
-	    mwiPass();
 
     //getNextData(file);          // Read Data from Sensor
     while (!feof(file)){
@@ -42,9 +39,14 @@ int main()
     	highPassY = highPassFilter(lowPassY);
     	derivY = derivativeFilter(highPassY);
     	squareY = squarePass(derivY);
-    	mwiPass(squareY);
+    	printf("Hej \n");
+    		for(int i=2;i>=1;i--){
+    			finalData[i]=finalData[i+1];
+    		}
+    		finalData[0]= mwiPass(squareY);
+
     	while (myIndex < 3){
-    		peakDetection();
+    		peakDetection(myIndex, finalData, timeInMiliSec);
     	}
     	myIndex++;
     	timeCounter++;
