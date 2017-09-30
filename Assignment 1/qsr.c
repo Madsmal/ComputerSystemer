@@ -4,10 +4,10 @@
 #include <time.h>
 #include "filters.h"
 
-int peaksTime[24] = { 0 };
-int peaksValue[24] = { 0 };
-int RpeakTime[8] = { 0 };
-int RpeakValue[8] = { 0 };
+int peaksTime[24] = {0};
+int peaksValue[24] = {0};
+int RpeakTime[8] = {0};
+int RpeakValue[8] = {0};
 int counter = 0;
 int counter1 = 0;
 int threshold1 = 0;
@@ -15,12 +15,16 @@ int threshold2 = 0;
 int NPKF = 0;
 int SPKF = 2500;
 int RR = 0;
+int RR_missCounter = 0;
 
 void peakDetection(int myIndex, int *mwiBuffY, int timeInMiliSec) {
-	printf("Peak-ish\n");
-	if ((mwiBuffY[myIndex - 1] < mwiBuffY[myIndex]) && (mwiBuffY[myIndex] > mwiBuffY[myIndex + 1])) {
-		peaksValue[counter] = mwiBuffY[myIndex];
+
+	if ((mwiBuffY[(myIndex - 1)%3] < mwiBuffY[myIndex%3]) && (mwiBuffY[myIndex%3] > mwiBuffY[(myIndex + 1)%3])) {
+
+		peaksValue[counter] = mwiBuffY[myIndex%3];
 		peaksTime[counter] = timeInMiliSec;
+
+
 	}
 
 
@@ -60,14 +64,21 @@ void peakDetection(int myIndex, int *mwiBuffY, int timeInMiliSec) {
 			RR_miss = RRaverage2 * 1.66;
 			threshold1 = NPKF + (SPKF - NPKF) / 4;
 			threshold2 = threshold1 / 2;
+			RR_missCounter = 0;
+
+			printf("%d\n",RpeakValue[counter]);
 
 
 	}
 	else if (RR > RR_miss){
-		// Implement Searchback here
+		RR_missCounter ++;
+		if(RR_missCounter >= 5){
+			printf("5 missed RR intervals \n");
+		}
+
 		for (int i = counter;i>=counter-7;i--){
 			if (peaksValue[i]>threshold2){
-							printf("Hejsa\n");
+
 							RpeakValue[counter] = peaksValue[i];
 							RpeakTime[counter] = peaksTime[i];
 							SPKF = peaksValue[counter]/8 + (7*SPKF)/8;
@@ -77,8 +88,11 @@ void peakDetection(int myIndex, int *mwiBuffY, int timeInMiliSec) {
 							RR_miss = RRaverage1 * 1.66;
 							threshold1 = NPKF + (SPKF - NPKF) / 4;
 							threshold2 = threshold1 / 2;
+
+							printf("%d\n",RpeakValue[counter]);
+
 							if (RpeakValue[counter]<2000){
-								printf("Value less than 2000\n");
+								printf("Value of R-peak less than 2000\n");
 							}
 							break;
 			}
