@@ -3,7 +3,9 @@
 #include "qsr.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
+// Værdier defineres
 
 int yBufferArr[12]={0};
 int xBufferArr[12]={0};
@@ -12,15 +14,24 @@ int timeCounter = 0;
 float timeInMiliSec = 0;
 int finalData[3];
 
-// Main function for organizing the program execution.
-// The functions and object predefined are just for inspiration.
-// Please change orden,names arguments to fit your solution.
+// Køretiden for programmet er markeret som kommentar, da vi ikke vil have, at den skal vise det hver gang programmet kører.
+// Køretiden står i rapporten.
+
+
+// clock_t start, end;
+// double cpu_time_used;
+
+
+
 
 int main()
-{	
+{
+	// Bruges til køretid:
+	// start = clock();
 
-	//  QRS_params qsr_params;       // Instance of the made avaiable through: #include "qsr.h"
-	FILE *file;                  // Pointer to a file object
+
+	// Filen læses - defineret i sensor.c
+	FILE *file;
 	file = openfile("ECG.txt");
 
 	int x;
@@ -31,15 +42,15 @@ int main()
 	finalData[3] = 0;
 
 
-	//getNextData(file);          // Read Data from Sensor
+	// Kører filen igennem til sidste datapunkt
 	while (!feof(file)){
+
+
 		x = getNextData(file);
 		lowPassY = lowPassFilter(x);
-		// printf("%d\n",lowPassY);
 		highPassY = highPassFilter(lowPassY);
 		derivY = derivativeFilter(highPassY);
 		squareY = squarePass(derivY);
-		// printf("Reads first while \n");
 
 		for(int i=2;i>0;i--){
 			finalData[i]=finalData[i-1];
@@ -47,23 +58,22 @@ int main()
 		}
 		finalData[0]= mwiPass(squareY);
 
-		// while (myIndex < 3){
+		// Hvis myIndex er større end lig med 3, så sendes data og tid videre til peakDetection i qsr.c
 		if (myIndex >= 3) {
 			peakDetection(finalData, timeInMiliSec);
-			// printf("%d\n",finalData[myIndex]);
-
 		}
 
 		myIndex++;
-		// }
-		// printf("Done with while 2 %d\n");
 
 		timeCounter++;
 		timeInMiliSec = timeCounter/2.5;
 
 
 	}
-
+	// Til køretid
+	// end = clock();
+	// cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+	// printf("%f\n",cpu_time_used);
 
 
 	return 0;
