@@ -1,4 +1,6 @@
 #include "filters.h"
+
+// Værdierne for de forskellige buffers bliver defineret.
 int lowBuffY[2] = {0};
 int lowBuffX[12] = {0};
 
@@ -9,6 +11,7 @@ int deriBuffX[4] = {0};
 
 int mwiBuffX[30] = {0};
 
+// De forskellige filtre. Hver filter tager en værdi fra tidligere filter, og sender det videre til næste filter.
 int lowPassFilter(int x)
 {
 
@@ -30,7 +33,7 @@ int lowPassFilter(int x)
 	return yn;
 
 
-	}
+}
 int highPassFilter(int x) {
 
 	int yn;
@@ -45,43 +48,46 @@ int highPassFilter(int x) {
 	highBuffY = yn;
 	for (int i = 0;i<12;i++){
 
-		 }
+	}
 
 	return yn;
 }
 
 int derivativeFilter(int x) {
 
-		int yn;
+	int yn;
 
-		yn = (2*x+deriBuffX[0]-deriBuffX[2]-2*deriBuffX[3])/8;
+	yn = (2*x+deriBuffX[0]-deriBuffX[2]-2*deriBuffX[3])/8;
 
-		for (int i = 3; i >= 1; i--){
-			deriBuffX[i] =deriBuffX[i-1];
-		}
-		deriBuffX[0] = x;
+	for (int i = 3; i >= 1; i--){
+		deriBuffX[i] =deriBuffX[i-1];
+	}
+	deriBuffX[0] = x;
 
-		return yn;
+	return yn;
 }
 
 int squarePass(int x){
-
+	// Sikrer os, at vi ikke får nogle negative værdier
 	return x*x;
 
 }
 
 int mwiPass(int x){
-	int N = 30;
-	int sum = x;
 
-	for (int i = 0; i < 30; i++){
+	int N = 30;
+	int sum = 0;
+	for (int i = 29; i >= 1; i--){
+		mwiBuffX[i] = mwiBuffX[i-1];
+	}
+	mwiBuffX[0] =x;
+	for (int i = 0; i < 29; i++){
 		sum = sum + mwiBuffX[i];
 
 	}
-	for (int i = 29; i >= 1; i--){
-					mwiBuffX[i] = mwiBuffX[i-1];
-	}
+
 
 	return sum/N;
+
 
 }
